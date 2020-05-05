@@ -17,23 +17,17 @@ public class Server extends UnicastRemoteObject implements LoginInterface{
     }
     
     @Override
-    public boolean Login(String username, String password) throws RemoteException{        
-        
+    public boolean Login(String username, String password) throws RemoteException{                
         boolean isLoginSuccessful = false;               
                 
-        try(Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/Users" , "DCOMS", "DCOMS1973");
+        try(Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/Users", "Users", "123");            
             Statement stmt = conn.createStatement();)
         {            
-            String sqlValidateLogin = "SELECT CASE PASSWORD WHEN " + password + " then 1 else 0 End as RESULT from DCOMS.USERS where USERNAME = " + username;
-            System.out.println(sqlValidateLogin);
-            
+            String sqlValidateLogin = "SELECT CASE WHEN PASSWORD = '" + password + "' then 1 else 0 End as RESULT from USERS WHERE USERNAME = '" + username + "'";            
             ResultSet rset = stmt.executeQuery(sqlValidateLogin);
-            System.out.println(rset);            
             
             while(rset.next()){
-                int isAthorizedUser = rset.getInt("RESULT");
-            
-                System.out.println(isAthorizedUser);
+                int isAthorizedUser = rset.getInt("RESULT");          
 
                 if(isAthorizedUser == 1){
                     isLoginSuccessful = true;
@@ -46,7 +40,24 @@ public class Server extends UnicastRemoteObject implements LoginInterface{
         
         return isLoginSuccessful;        
     }   
-}
+
+
+    public boolean Register(String firstname, String lastname, String passport, String username, String password){
+        boolean isSignupSuccessful = true;               
+        char usertype = '3';
+        
+        try(Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/Users", "Users", "123");            
+            Statement stmt = conn.createStatement();)
+        {            
+            stmt.executeUpdate("Insert into Users values('" + firstname +"', '" + lastname+ "' , '" + passport+ "', '" + username+ "', '" + password+ "', '" + usertype + "')");                              
+                        
+        } catch (SQLException ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+        }           
+        
+        return isSignupSuccessful;                    
+    }           
+}   
 
 //   @Override
 //    public boolean Login(String username, char[] password) throws RemoteException{
