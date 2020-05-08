@@ -7,84 +7,47 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Server extends UnicastRemoteObject implements LoginInterface{
-    public Server()throws RemoteException{
-        //To call the function in this super class
+    public Server()throws RemoteException{        
         super();
     }
     
     @Override
-    public boolean Login(String username, String password) throws RemoteException{                
-        boolean isLoginSuccessful = false;               
-                
+    public String Login(String username, String password) throws RemoteException{                
+        
         try(Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/Users", "Users", "123");            
             Statement stmt = conn.createStatement();)
         {            
-            String sqlValidateLogin = "SELECT CASE WHEN PASSWORD = '" + password + "' then 1 else 0 End as RESULT from USERS WHERE USERNAME = '" + username + "'";            
+            String sqlValidateLogin = "SELECT USERTYPE, CASE WHEN PASSWORD = '" + password + "' then 1 else 0 End as RESULT from USERS WHERE USERNAME = '" + username + "'";            
             ResultSet rset = stmt.executeQuery(sqlValidateLogin);
             
             while(rset.next()){
-                int isAthorizedUser = rset.getInt("RESULT");          
-
-                if(isAthorizedUser == 1){
-                    isLoginSuccessful = true;
-                }
-            }            
-                        
-        } catch (SQLException ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-        }           
-        
-        return isLoginSuccessful;        
+                int isAthorizedUser = rset.getInt("RESULT");   
+                String userType = rset.getString("USERTYPE");
+                
+                if(isAthorizedUser == 1){ return userType; }
+            }                                    
+        } catch (SQLException ex) {ex.printStackTrace();}                   
+        return "F";        
     }   
 
-
-    public boolean Register(String firstname, String lastname, String passport, String username, String password){
-        boolean isSignupSuccessful = true;               
-        char usertype = '3';
-        
+    public boolean Register(String firstname, String lastname, String username, String password, String passport, String phone, String userType){                   
+                      
         try(Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/Users", "Users", "123");            
             Statement stmt = conn.createStatement();)
-        {            
-            stmt.executeUpdate("Insert into Users values('" + firstname +"', '" + lastname+ "' , '" + passport+ "', '" + username+ "', '" + password+ "', '" + usertype + "')");                              
-                        
-        } catch (SQLException ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-        }           
-        
-        return isSignupSuccessful;                    
+        {                               
+            String isUsernameFree = "SELECT CASE WHEN COUNT(*) > 0 then 1 else 0 End as RESULT from USERS WHERE USERNAME = '" + username + "'";        
+            ResultSet rset = stmt.executeQuery(isUsernameFree);
+            
+            while(rset.next()){
+                int isUsernameTaken = rset.getInt("RESULT");          
+                if(isUsernameTaken == 1){ return false; }
+            }        
+            
+            stmt.executeUpdate("Insert into Users values('" + firstname +"', '" + lastname+ "' , '" + username+ "', '" + password+ "', '" + passport+ "', '" + phone + "', '" + userType + "')");                              
+            
+        } catch (SQLException ex) {ex.printStackTrace();}                
+        return true;          
     }           
-}   
-
-//   @Override
-//    public boolean Login(String username, char[] password) throws RemoteException{
-//        boolean isLoginSuccessful = false;
-//        
-//        try{
-//            if(username.equals("Badran") && isPasswordCorrect(password)){
-//                isLoginSuccessful = true;                
-//            }
-//        }
-//        catch(HeadlessException e){
-//            System.out.println(e.getMessage());
-//        }    
-//        return isLoginSuccessful;        
-//    }
-//    
-//    private static boolean isPasswordCorrect(char[] input) throws RemoteException{
-//        boolean isCorrect = true;
-//        char[] correctPassword = {'p', 'a', 's', 's', 'w', 'o', 'r', 'd'};
-//
-//        if(input.length != correctPassword.length){
-//            isCorrect = false;
-//        }
-//        else{
-//            isCorrect = Arrays.equals(input, correctPassword);
-//        }
-//        Arrays.fill(correctPassword, '0');
-//
-//        return isCorrect;  
-//    }
+}

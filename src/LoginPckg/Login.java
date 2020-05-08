@@ -1,25 +1,24 @@
 package LoginPckg;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author bondo
- */
-public class Login extends javax.swing.JFrame {
-
+public class Login extends javax.swing.JFrame {        
     /**
      * Creates new form ClientFrame
      */
+   
     public Login() {
         initComponents();
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);    
     }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -30,6 +29,7 @@ public class Login extends javax.swing.JFrame {
         loginBtn = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         passwordFld = new javax.swing.JPasswordField();
+        signupBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -52,34 +52,43 @@ public class Login extends javax.swing.JFrame {
 
         jLabel3.setText("Password");
 
+        signupBtn.setText("Signup");
+        signupBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                signupBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 71, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(usernameFld)
-                    .addComponent(passwordFld, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(45, 45, 45))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(124, 124, 124))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(usernameFld)
+                            .addComponent(passwordFld, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(50, 50, 50))))
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(110, 110, 110)
-                        .addComponent(loginBtn))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(128, 128, 128)
-                        .addComponent(jLabel1)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(96, 96, 96)
+                .addComponent(loginBtn)
+                .addGap(18, 18, 18)
+                .addComponent(signupBtn)
+                .addGap(0, 46, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(34, 34, 34)
+                .addGap(24, 24, 24)
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -89,9 +98,11 @@ public class Login extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(passwordFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
-                .addComponent(loginBtn)
-                .addGap(21, 21, 21))
+                .addGap(33, 33, 33)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(loginBtn)
+                    .addComponent(signupBtn))
+                .addContainerGap(39, Short.MAX_VALUE))
         );
 
         pack();
@@ -102,26 +113,46 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_usernameFldActionPerformed
 
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
-         boolean login;
+        String login;     
         String username = usernameFld.getText();
         String password = passwordFld.getText();
-
-        try {
-            // To connect to other pc: use IP address instead of localhost
-            LoginInterface object = (LoginInterface)Naming.lookup("rmi://localhost:1044/sub");
-
-            login = object.Login(username, password);
-
-            if(login){
-                JOptionPane.showMessageDialog(null, "Successful Login!");
-            }
-            else{
-                JOptionPane.showMessageDialog(null, "Incorrect Username or Password", "Error Message", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (RemoteException | NotBoundException | MalformedURLException ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        
+        if ( username.trim().length() == 0 ||  password.trim().length() == 0){
+            JOptionPane.showMessageDialog(null, "Please Fill in ALL Fields", "Incomplete Fields", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+        
+        try {            
+            LoginInterface object = (LoginInterface)Naming.lookup("rmi://localhost:1044/sub");
+            login = object.Login(username, password);
+                        
+            if(login != null && !login.equals("F")){                    
+                JOptionPane.showMessageDialog(null, "Successful Login!");   
+                this.setVisible(false);                
+            }
+            
+            else{
+                JOptionPane.showMessageDialog(null, "Incorrect Username or Password", "Login Unsuccessful", JOptionPane.ERROR_MESSAGE);
+                return;                 
+            }                        
+            
+            //"A" Admin_Menu
+            if(login.equals("A")) { new Admin_Menu().setVisible(true);}          
+            
+            //"C" Customer_Menu 
+            if(login.equals("C")) { }    
+            
+            //"E" Employee_Menu     
+            if(login.equals("E")) { }    
+            
+        } catch (RemoteException | NotBoundException | MalformedURLException ex) {ex.printStackTrace();}                      
     }//GEN-LAST:event_loginBtnActionPerformed
+
+    private void signupBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signupBtnActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);  
+        new Registeration().setVisible(true);         
+    }//GEN-LAST:event_signupBtnActionPerformed
 
 
     /**
@@ -168,6 +199,7 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JButton loginBtn;
     private javax.swing.JPasswordField passwordFld;
+    private javax.swing.JButton signupBtn;
     private javax.swing.JTextField usernameFld;
     // End of variables declaration//GEN-END:variables
 }
