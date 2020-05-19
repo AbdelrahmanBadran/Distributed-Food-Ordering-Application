@@ -4,9 +4,14 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JTable;
+import net.proteanit.sql.DbUtils;
 
 public class Server extends UnicastRemoteObject implements LoginInterface{
     public Server()throws RemoteException{        
@@ -16,7 +21,7 @@ public class Server extends UnicastRemoteObject implements LoginInterface{
     @Override
     public String Login(String username, String password) throws RemoteException{                
         
-        try(Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/Users", "Users", "123");            
+        try(Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/DCOMS", "Assignment", "Assignment");            
             Statement stmt = conn.createStatement();)
         {            
             String sqlValidateLogin = "SELECT USERTYPE, CASE WHEN PASSWORD = '" + password + "' then 1 else 0 End as RESULT from USERS WHERE USERNAME = '" + username + "'";            
@@ -34,7 +39,7 @@ public class Server extends UnicastRemoteObject implements LoginInterface{
 
     public boolean Register(String firstname, String lastname, String username, String password, String passport, String phone, String userType){                   
                       
-        try(Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/Users", "Users", "123");            
+        try(Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/DCOMS", "Assignment", "Assignment");            
             Statement stmt = conn.createStatement();)
         {                               
             String isUsernameFree = "SELECT CASE WHEN COUNT(*) > 0 then 1 else 0 End as RESULT from USERS WHERE USERNAME = '" + username + "'";        
@@ -49,5 +54,41 @@ public class Server extends UnicastRemoteObject implements LoginInterface{
             
         } catch (SQLException ex) {ex.printStackTrace();}                
         return true;          
-    }           
+    }  
+   
+    public List<menu> getmenu(){ //THIS METHOD TAKES ITEMS IN THE DATABASE AND PLACES THEM IN A LIST
+        List<menu> list = new ArrayList<menu>();
+        
+        try{Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/DCOMS","Assignment","Assignment");
+                String sql = "select * from MENU";
+                PreparedStatement stmt = con.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery();
+                while (rs.next()){
+                    int itemID =rs.getInt("ITEM_NO");
+                    
+                    String name = rs.getString("NAME");
+                    String cat = rs.getString("CATEGORY");
+                    String des = rs.getString("DESCRIPTION");
+                    
+                    Double price = rs.getDouble("PRICE");
+                    
+                    //SETVALUES
+                    
+                    menu Menu = new menu();
+                    Menu.setCat(cat);
+                    Menu.setDes(des);
+                    Menu.setname(name);
+                    Menu.setitemNumber(itemID);
+                    Menu.setprice(price);
+                    list.add(Menu);
+                      
+                }
+                rs.close();
+                
+            
+        }catch (SQLException ex) {ex.printStackTrace();} 
+        
+       
+        return list;
+    }
 }

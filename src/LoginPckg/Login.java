@@ -140,7 +140,10 @@ public class Login extends javax.swing.JFrame {
             if(login.equals("A")) { new Admin_Menu().setVisible(true);}          
             
             //"C" Customer_Menu 
-            if(login.equals("C")) { }    
+            if(login.equals("C")) { 
+            this.setVisible(false);
+            new Customer_menu().setVisible(true);
+            }    
             
             //"E" Employee_Menu     
             if(login.equals("E")) { }    
