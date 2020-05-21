@@ -1,0 +1,19 @@
+INSERT INTO USERS.MENU (ITEM_NO, "NAME", CATEGORY, DESCRIPTION, PRICE, QUANTITY) 
+	VALUES (1, 'Pepsi', 'Drinks', 'A soft drink', 10.5, 5);
+INSERT INTO USERS.MENU (ITEM_NO, "NAME", CATEGORY, DESCRIPTION, PRICE, QUANTITY) 
+	VALUES (2, 'Water', 'Drinks', 'Mineral water', 5.0, 10);
+INSERT INTO USERS.MENU (ITEM_NO, "NAME", CATEGORY, DESCRIPTION, PRICE, QUANTITY) 
+	VALUES (3, 'Fried Rice', 'Food', 'Rice fried with onions, carrots and egg
+', 12.0, 30);
+INSERT INTO USERS.MENU (ITEM_NO, "NAME", CATEGORY, DESCRIPTION, PRICE, QUANTITY) 
+	VALUES (4, 'Bubble Tea', 'Drink', 'Milk tea with tapioka
+', 10.0, 12);
+INSERT INTO USERS.MENU (ITEM_NO, "NAME", CATEGORY, DESCRIPTION, PRICE, QUANTITY) 
+	VALUES (5, 'Plain Rice', 'Food', 'Plain rice cooked with coconut milk
+', 7.0, 30);
+INSERT INTO USERS.MENU (ITEM_NO, "NAME", CATEGORY, DESCRIPTION, PRICE, QUANTITY) 
+	VALUES (6, 'Milk Tea', 'Drink', 'Plain Milk Freshly brewed tea
+', 9.0, 14);
+INSERT INTO USERS.MENU (ITEM_NO, "NAME", CATEGORY, DESCRIPTION, PRICE, QUANTITY) 
+	VALUES (7, 'Fried Chicken', 'Food', 'Chicken Leg deep fried
+', 11.0, 14);

@@ -1,4 +1,4 @@
-package LoginPckg;
+package DCOMS;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -8,11 +8,11 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import javax.swing.JOptionPane;
 
-public class Login extends javax.swing.JFrame {        
+public class Login extends javax.swing.JFrame  {        
     /**
      * Creates new form ClientFrame
      */
-   
+   public static String username;
     public Login() {
         initComponents();
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -63,32 +63,29 @@ public class Login extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(124, 124, 124))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(usernameFld)
-                            .addComponent(passwordFld, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(50, 50, 50))))
             .addGroup(layout.createSequentialGroup()
-                .addGap(96, 96, 96)
-                .addComponent(loginBtn)
-                .addGap(18, 18, 18)
+                .addContainerGap()
                 .addComponent(signupBtn)
-                .addGap(0, 46, Short.MAX_VALUE))
+                .addGap(59, 59, 59)
+                .addComponent(loginBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(71, 71, 71)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(usernameFld)
+                        .addComponent(passwordFld, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(76, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(24, 24, 24)
+                .addGap(31, 31, 31)
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -98,11 +95,15 @@ public class Login extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(passwordFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(33, 33, 33)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(loginBtn)
-                    .addComponent(signupBtn))
-                .addContainerGap(39, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(signupBtn)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(29, 29, 29)
+                        .addComponent(loginBtn)
+                        .addContainerGap(37, Short.MAX_VALUE))))
         );
 
         pack();
@@ -114,8 +115,8 @@ public class Login extends javax.swing.JFrame {
 
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
         String login;     
-        String username = usernameFld.getText();
-        String password = passwordFld.getText();
+        username = usernameFld.getText();
+        String password = passwordFld.getText();        
         
         if ( username.trim().length() == 0 ||  password.trim().length() == 0){
             JOptionPane.showMessageDialog(null, "Please Fill in ALL Fields", "Incomplete Fields", JOptionPane.ERROR_MESSAGE);
@@ -124,39 +125,45 @@ public class Login extends javax.swing.JFrame {
         
         try {            
             LoginInterface object = (LoginInterface)Naming.lookup("rmi://localhost:1044/sub");
-            login = object.Login(username, password);
+           
+            //SECURE COMMUNICATION w/ SERVER
+            String hashedPassword = object.hashInput(password);
+            login = object.Login(username, hashedPassword);
                         
             if(login != null && !login.equals("F")){                    
                 JOptionPane.showMessageDialog(null, "Successful Login!");   
                 this.setVisible(false);                
             }
             
-            else{
+            else{                
                 JOptionPane.showMessageDialog(null, "Incorrect Username or Password", "Login Unsuccessful", JOptionPane.ERROR_MESSAGE);
                 return;                 
             }                        
             
-            //"A" Admin_Menu
-            if(login.equals("A")) { new Admin_Menu().setVisible(true);}          
-            
-            //"C" Customer_Menu 
-            if(login.equals("C")) { 
-            this.setVisible(false);
-            new Customer_menu().setVisible(true);
-            }    
-            
-            //"E" Employee_Menu     
-            if(login.equals("E")) { }    
-            
-        } catch (RemoteException | NotBoundException | MalformedURLException ex) {ex.printStackTrace();}                      
-    }//GEN-LAST:event_loginBtnActionPerformed
+            switch(login){
+                case "A":  
+                    new Admin_Menu().setVisible(true);
+                    break;
+                case "C": 
+                    this.setVisible(false);
+                    new Customer_menu().setVisible(true);
+                    break;
+                case "E": 
+                    this.setVisible(false);
+                    new Employee().setVisible(true);
+                    break;
+                default: this.setVisible(true);
+            }
 
+        } catch (RemoteException | NotBoundException | MalformedURLException ex) {ex.printStackTrace();}        
+    }//GEN-LAST:event_loginBtnActionPerformed
+  
     private void signupBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signupBtnActionPerformed
         // TODO add your handling code here:
         this.setVisible(false);  
         new Registeration().setVisible(true);         
     }//GEN-LAST:event_signupBtnActionPerformed
-
+   
 
     /**
      * @param args the command line arguments
